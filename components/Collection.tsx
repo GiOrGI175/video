@@ -9,19 +9,7 @@ type CollectionProps = {
 export default function Collection({ name, photos }: CollectionProps) {
   return (
     <div className='max-w-[470px] bg-white p-[30px] rounded-[30px] shadow-md cursor-pointer transition-all duration-150 ease-in-out hover:shadow-xl hover:transform hover:translate-y-[-5px] '>
-      {photos[0] ? (
-        <Image
-          className='h-[250px] w-full object-cover rounded-[20px] mb-[15px]'
-          width={470}
-          height={250}
-          objectFit='cover'
-          alt='Item'
-          src={photos[0]}
-        />
-      ) : (
-        <div className='h-[250px] w-full object-cover rounded-[20px] mb-[15px] bg-gray-300'></div>
-      )}
-
+      <h2 className='mt-[15px] text-[20px]'>{name}</h2>
       {photos[0] ? (
         <Image
           className='h-[250px] w-full object-cover rounded-[20px] mb-[15px]'

@@ -8,15 +8,31 @@ type CollectionData = {
   photos: string[];
 };
 
+type myColl = {
+  name: string;
+};
+
 export default function Home() {
   const [collections, setCollections] = useState<CollectionData[]>([]);
+  const [searchValue, setSearchValue] = useState<String>('');
+  const [categoryId, setCategoryId] = useState<Number>(0);
+
+  const myCategory: myColl[] = [
+    { name: 'All' },
+    { name: 'Sea' },
+    { name: 'Mountain' },
+    { name: 'Architectures' },
+    { name: 'Cities' },
+  ];
 
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const response = await fetch(
-          'https://6734d2605995834c8a90ffac.mockapi.io/photos'
-        );
+        const url = `https://6734d2605995834c8a90ffac.mockapi.io/photos${
+          categoryId ? `?category=${categoryId}` : ''
+        }`;
+
+        const response = await fetch(url);
         const data: CollectionData[] = await response.json();
         setCollections(data);
         console.log(data);
@@ -25,41 +41,48 @@ export default function Home() {
       }
     };
     fetchCollections();
-  }, []);
+  }, [categoryId]);
+
+  const filterCollection = collections.filter((collection) =>
+    collection.name
+      .toLocaleLowerCase()
+      .includes(searchValue.toLocaleLowerCase())
+  );
+
+  console.log(filterCollection);
 
   return (
-    <div>
-      <div>
-        <h1>My Colection</h1>
-        <ul>
-          <li>Home</li>
-          <li>About</li>
-          <li>Test</li>
-          <li>Test2</li>
+    <div className='p-[50px] max-w-[1200px] w-full m-auto'>
+      <h1 className='font-serif'>My Photo Collection</h1>
+      <div className='flex items-center flex-wrap mt-[40px]'>
+        <ul className='flex list-none p-0'>
+          {myCategory.map((category, index) => (
+            <li
+              key={index}
+              onClick={() => setCategoryId(index)}
+              className={`inline-block py-[12px] px-[18px] rounded-[10px] mr-[10px] cursor-pointer font-semibold text-[18px] border-[1px] border-transparent hover:border-black active:bg-black active:text-white transition-all duration-150 ease-in-out ${
+                categoryId === index ? 'bg-black text-white' : 'bg-white'
+              }`}
+            >
+              {category.name}
+            </li>
+          ))}
         </ul>
-        <input type='text' placeholder='Search' />
+        <input
+          className='mt-[20px] w-[250px] h-[50px] p-[0_15px] text-[16px] rounded-[10px] border-[1px] border-[#00000033] focus:border-[#00000066] outline-none transition-all duration-150 ease-in-out'
+          placeholder='Search With Name'
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
       </div>
 
-      {/* Colection */}
-      <div className='grid grid-cols-1 gap-[30px] mt-[40px] sm:grid-cols-2'>
-        {/* <Collection
-          name='Travel Around World'
-          photos={[
-            'https://images.unsplash.com/photo-1613310023042-ad79320c00ff?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bW91bmF0aW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-            'https://images.unsplash.com/photo-1612676239016-41e2c92b8e06?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW91bmF0aW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-            'https://images.unsplash.com/photo-1610809027249-86c649feacd5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bW91bmF0aW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-            'https://images.unsplash.com/photo-1621682372775-533449e550ed?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8bW91bmF0aW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-          ]}
-        /> */}
-
-        {collections.map((colection) => (
-          <Collection
-            key={colection.name}
-            name={colection.name}
-            photos={colection.photos}
-          />
-        ))}
-      </div>
+      {filterCollection.map((colection) => (
+        <Collection
+          key={colection.name}
+          name={colection.name}
+          photos={colection.photos}
+        />
+      ))}
     </div>
   );
 }
